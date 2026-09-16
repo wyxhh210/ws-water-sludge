@@ -236,7 +236,7 @@ def show_main():
             st.dataframe(st.session_state.history_data, use_container_width=True, height=400)
 
     with tab2:
-        st.subheader("⏳ 进水COD时间序列趋势（极简版）")
+        st.subheader("⏳ 进水COD时间序列趋势")
         ts_data = pd.DataFrame({"样本序号": range(len(X)), "进水COD": X["进水COD"]})
         fig_ts = px.line(ts_data, x="样本序号", y="进水COD", title="历史进水COD变化趋势")
         fig_ts.update_layout(template=st.session_state.theme)
@@ -248,36 +248,9 @@ def show_main():
         
         st.markdown("### 🔥 斯皮尔曼相关性热力图")
         corr_matrix = X.corr(method='spearman')
-        
-        # ✅ 正方形放大热力图，色阶在右侧
-        fig_heat = px.imshow(
-            corr_matrix, 
-            text_auto=".2f", 
-            color_continuous_scale='RdBu_r', 
-            title="Spearman Correlation Heatmap",
-            aspect="equal", # 保持正方形
-            width=800,
-            height=800
-        )
-        fig_heat.update_layout(
-            coloraxis_colorbar=dict(
-                title="相关系数",
-                thicknessmode="pixels", thickness=20,
-                lenmode="pixels", len=600,
-                yanchor="top", y=1,
-                xanchor="left", x=1.02
-            ),
-            margin=dict(l=20, r=20, t=50, b=20)
-        )
+        fig_heat = px.imshow(corr_matrix, text_auto=".2f", color_continuous_scale='RdBu_r', title="Spearman Correlation Heatmap")
         fig_heat.update_layout(template=st.session_state.theme)
-        st.plotly_chart(fig_heat, use_container_width=False)
-
-        # ============ 新增：生成相关性表格并下载 ============
-        st.markdown("### 📋 相关性数据表")
-        st.dataframe(corr_matrix, use_container_width=True)
-        csv_corr = corr_matrix.to_csv().encode('utf-8-sig')
-        st.download_button("📥 下载相关性数据表 (CSV)", csv_corr, "斯皮尔曼相关性矩阵.csv", "text/csv", key="dl_corr")
-        # ====================================================
+        st.plotly_chart(fig_heat, use_container_width=True)
 
         st.markdown(f"### 🎯 特征重要性（预测 {target_var_fi}）")
         col_m1, col_m2, col_m3, col_m4, col_m5 = st.columns(5)
